@@ -76,16 +76,17 @@ public_users.get('/review/:isbn',function (req, res) {
       if(JSON.stringify(id) === JSON.stringify(reviewByISBN)){
         if(JSON.stringify(keys) === JSON.stringify("title") || JSON.stringify(keys) === JSON.stringify("author")){
           console.log(keys, ":", values)
-          showISBNTitle = JSON.stringify(keys).concat(JSON.stringify(values))
+          //showISBNTitle =  JSON.stringify(keys) + ":" + (JSON.stringify(values)).toString()
+          showISBNTitle =  keys + " : " + values
         }
         if(JSON.stringify(keys) === JSON.stringify("reviews")){
-          console.log(keys, ":", values)
+          console.log(keys, " : ", values)
           reviewsForISBN.push(keys,JSON.stringify(values))
         }
     }
     });
   });
-  return res.send(reviewByISBN + showISBNTitle + '\n' + reviewsForISBN)
+  return res.send("ISBN : " + reviewByISBN + "\n" + showISBNTitle + '\n' + reviewsForISBN)
 });
 
 module.exports.general = public_users;
