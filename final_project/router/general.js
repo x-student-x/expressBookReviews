@@ -33,33 +33,26 @@ public_users.post("/register", (req,res) => {
 
 });
 
-public_users.post("/customer/login", (req,res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    if (!username || !password) {
-        return res.status(404).json({message: "Error logging in"});
-    }
-   if (authenticatedUser(username,password)) {
-      let accessToken = jwt.sign({
-        data: password
-      }, 'access', { expiresIn: 60 * 60 });
-      req.session.authorization = {
-        accessToken,username
-    }
-    return res.status(200).send("User successfully logged in");
-    } else {
-      return res.status(208).json({message: "Invalid Login. Check username and password"});
-    }});
-
-
-// Get the book list available in the shop
+// Get the book list available in the shop | Task 1
 public_users.get('/',function (req, res) {
   //Write your code here
   //return res.status(300).json({message: "Yet to be implemented"});
   return res.send(JSON.stringify({books},null,4));
 });
 
-// Get book details based on ISBN
+
+// Get the book list available in the shop using promise | Task 1 using Promise | *Task 10
+public_users.get('/',function (req, res) {
+  let getBookPromise = new Promise((resolve,reject)=>{
+    resolve(books);
+  })
+  getBookPromise.then(
+    (bookList)=>res.send(JSON.stringify(bookList, null, 4)),
+  );
+});
+
+
+// Get book details based on ISBN | Task 2
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
   //return res.status(300).json({message: "Yet to be implemented"});
@@ -67,7 +60,22 @@ public_users.get('/isbn/:isbn',function (req, res) {
   return res.send(books[bookByISBN])
  });
 
-// Get book details based on author
+// Get book details based on ISBN | Task 2 using Promise | *Task 11
+public_users.get('/isbn/:isbn',function (req, res) {
+  //Write your code here
+  //return res.status(300).json({message: "Yet to be implemented"});
+  const bookByISBN = req.params.isbn;
+  let getBookByISBN = new Promise((resolve,reject)=>{
+    resolve(books[bookByISBN]);
+  });
+  getBookByISBN.then(
+    (bookList)=>res.send(JSON.stringify(bookList, null, 4)),
+  );
+ });
+
+
+
+// Get book details based on author | Task 3
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
   //return res.status(300).json({message: "Yet to be implemented"});
@@ -85,13 +93,60 @@ public_users.get('/author/:author',function (req, res) {
   return res.send(bookByAuthor)
 });
 
-// Get all books based on title
+// Get book details based on author | Task 3 using Promise | *Task 12
+public_users.get('/author/:author',function (req, res) {
+  //Write your code here
+  //return res.status(300).json({message: "Yet to be implemented"});
+  const byAuthor = req.params.author;
+  const bookByAuthor = [];
+
+  //return res.send(bookByAuthor)
+
+  let getBookByAuthor = new Promise((resolve,reject)=>{
+    resolve(Object.entries(books).forEach(([id, details]) => {
+    //console.log(`${JSON.stringify(id)}: ${JSON.stringify(details)}`);
+    Object.entries(details).forEach(([keys, values]) =>{
+        //console.log(`${JSON.stringify(keys)}: ${JSON.stringify(values)}`)
+        if(JSON.stringify(values) === JSON.stringify(byAuthor)){
+            bookByAuthor.push(id,details)
+        }
+    });
+  }));
+  });
+  getBookByAuthor.then(
+    (bookList)=>res.send(JSON.stringify(bookByAuthor, null, 4))
+  );
+});
+
+
+
+// Get all books based on title | Task 4
+// public_users.get('/title/:title',function (req, res) {
+//   //Write your code here
+//   //return res.status(300).json({message: "Yet to be implemented"});
+//   const byTitle = req.params.title;
+//   const bookBytitle = [];
+//   Object.entries(books).forEach(([id, details]) => {
+//     //console.log(`${JSON.stringify(id)}: ${JSON.stringify(details)}`);
+//     Object.entries(details).forEach(([keys, values]) =>{
+//         //console.log(`${JSON.stringify(keys)}: ${JSON.stringify(values)}`)
+//         if(JSON.stringify(values) === JSON.stringify(byTitle)){
+//             bookBytitle.push(id,details)
+//         }
+//     });
+//   });
+//   return res.send(bookBytitle)
+// });
+
+// Get all books based on title | Task 4 using Promise | *Task 13
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
   //return res.status(300).json({message: "Yet to be implemented"});
   const byTitle = req.params.title;
   const bookBytitle = [];
-  Object.entries(books).forEach(([id, details]) => {
+  let getBookByTitle = new Promise((resolve, reject) =>{
+    resolve(
+      Object.entries(books).forEach(([id, details]) => {
     //console.log(`${JSON.stringify(id)}: ${JSON.stringify(details)}`);
     Object.entries(details).forEach(([keys, values]) =>{
         //console.log(`${JSON.stringify(keys)}: ${JSON.stringify(values)}`)
@@ -99,9 +154,13 @@ public_users.get('/title/:title',function (req, res) {
             bookBytitle.push(id,details)
         }
     });
+  }));
   });
-  return res.send(bookBytitle)
+  getBookByTitle.then(
+    (bookList)=>res.send(JSON.stringify(bookBytitle, null, 4))
+  );
 });
+
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
